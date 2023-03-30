@@ -1,6 +1,6 @@
 # JunkBuster
 
-Junk Buster is a Google Chrome extension that highlights junk characters in selected text, making it easier to identify and improve the readability of your text.
+Junk Buster is a Google Chrome extension that highlights junk characters in selected text, making it easier to identify and improve the readability of the text.
 
 ## Installation
 To install Junk Buster, follow these steps:
