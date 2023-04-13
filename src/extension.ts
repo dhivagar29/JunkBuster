@@ -1,26 +1,44 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+function countJunkCharacters(editor: vscode.TextEditor, junkCharacters: string[]) {
+    let text = editor.document.getText();
+    let count = 0;
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "junk-buster" is now active!');
+    for (let i = 0; i < text.length; i++) {
+        if (junkCharacters.includes(text.charAt(i))) {
+            count++;
+        }
+    }
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('junk-buster.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Junk Buster!');
-	});
-
-	context.subscriptions.push(disposable);
+    vscode.window.showInformationMessage(`Number of Junk Characters: ${count}`);
 }
 
-// This method is called when your extension is deactivated
+export function activate(context: vscode.ExtensionContext) {
+    let disposable = vscode.commands.registerCommand('extension.countJunkCharacters', () => {
+        let editor = vscode.window.activeTextEditor;
+
+        if (editor) {
+            let config = vscode.workspace.getConfiguration('countJunkCharacters');
+            let junkCharacters = config.get<string[]>('junkCharacters', ['!','@','#','$','%','^','&','*','(',')','-','_','=','+','[',']','{','}','|','\\',';',':','\'','"',',','.','<','>','/','?','~','`']);
+
+            countJunkCharacters(editor, junkCharacters);
+        }
+    });
+
+    context.subscriptions.push(disposable);
+
+    let disposable2 = vscode.commands.registerCommand('extension.configureCountJunkCharacters', () => {
+        vscode.window.showInputBox({
+            placeHolder: 'Comma-separated list of junk characters'
+        }).then(value => {
+            if (value) {
+                let config = vscode.workspace.getConfiguration('countJunkCharacters');
+                config.update('junkCharacters', value.split(',').map(s => s.trim()), true);
+            }
+        });
+    });
+
+    context.subscriptions.push(disposable2);
+}
+
 export function deactivate() {}
